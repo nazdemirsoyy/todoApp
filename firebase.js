@@ -1,12 +1,8 @@
-// Import the functions you need from the SDKs you need
-//import * as firebase from "firebase";
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, initializeAuth,getReactNativePersistence } from "firebase/auth";
-// import {getReactNativePersistence} from 'firebase/auth/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFirestore, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,11 +14,11 @@ const firebaseConfig = {
   appId: "1:931889341653:web:7f02aee0577bcf44286e5c"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
+const db = getFirestore(app);
 
 const handleSignUp = (email, password) => {
     createUserWithEmailAndPassword(auth, email, password)
@@ -48,5 +44,32 @@ const handleSignUp = (email, password) => {
       });
   };
   
+  const addTaskToFirestore = async (userId, task) => {
+    try {
+      const docRef = await addDoc(collection(db, "tasks"), {
+        userId: userId,
+        task: task,
+        createdAt: new Date(),
+      });
+      console.log("Task added!");
+      return docRef;
+    } catch (error) {
+      console.error("Error adding task: ", error);
+      throw error; 
+    }
+  };
+    
+  
+  const getTasksFromFirestore = async (userId) => {
+    const q = query(collection(db, "tasks"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    const tasks = [];
+    querySnapshot.forEach((doc) => {
+      tasks.push({ id: doc.id, ...doc.data() });
+    });
+    return tasks;
+  };
+  
+  export { addTaskToFirestore, getTasksFromFirestore };
 
-  export { auth };
+  export { auth, db };

@@ -1,6 +1,8 @@
-import React, { useState , useTransition} from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState , useTransition, useEffect} from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList } from 'react-native';
 import Task from '../components/Task';
+import { auth, addTaskToFirestore, getTasksFromFirestore } from '../firebase'; 
+
 
 const Home = () => {
 
@@ -8,37 +10,92 @@ Keyboard.dismiss();
 const [task,setTask] = useState();
 const [taskItems, setTaskItems] = useState([]);
 
-const handleAddTask = () =>{
-  setTaskItems([...taskItems,task]) //Append the new task into tasItems array
-  setTask(null); // clear the text input area
-}
+// const handleAddTask = () => {
+//   if (task && auth.currentUser) {
+//       addTaskToFirestore(auth.currentUser.uid, task).then(() => {
+//       setTaskItems([...taskItems, task]); 
+//       setTask('');
+//     });
+//   }
+// };
 
-const completeTask = (index) => { 
+const handleAddTask = () => {
+  if (task && auth.currentUser) {
+    addTaskToFirestore(auth.currentUser.uid, task)
+      .then((docRef) => {
+        if (docRef && docRef.id) {
+          const newTask = {
+            id: docRef.id,
+            task: task,
+          };
+          setTaskItems(prevTaskItems => [...prevTaskItems, newTask]);
+          setTask('');
+        } else {
+          console.error("Document reference is undefined.");
+        }
+      })
+      .catch(error => {
+        console.error("Error adding task: ", error);
+      });
+  }
+};
+
+
+const completeTask = (index) => {
   let itemsCopy = [...taskItems];
   itemsCopy.splice(index, 1);
   setTaskItems(itemsCopy);
-}
+};
+
+
+useEffect(() => {
+  if (auth.currentUser) {
+    getTasksFromFirestore(auth.currentUser.uid)
+      .then(fetchedTasks => {
+        setTaskItems(fetchedTasks); // Set the fetched tasks to state
+      })
+      .catch(error => {
+        console.error("Error fetching tasks: ", error);
+      });
+  }
+}, [auth.currentUser]);
+
+
+
+const renderItem = ({ item }) => (
+  <TouchableOpacity onPress={() => completeTask(item.id)}>
+    <Task text={item.task} />
+  </TouchableOpacity>
+);
 
 return (
     <View style={styles.container}>
       {/* Today's tasks */}
 
+      {/* <FlatList
+        data={taskItems}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        style={styles.taskList}
+      /> */}
+
       <View style = {styles.taskWrapper}>
         <Text style = {styles.sectionTitle}> Today's Tasks</Text>
-
-
+        
         <View style = {styles.items}>
-          
-          {
-            taskItems.map((item, index) => {
-              return(
-                <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                  <Task text={item} />
-                </TouchableOpacity>
-              )
-            })
-          }
-          
+        {/* <FlatList
+          data={taskItems}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        /> */}
+        {
+          taskItems.map((item) => {
+          return (
+            <TouchableOpacity key={item.id} onPress={() => completeTask(item.id)}>
+              <Task text={item.task} />
+            </TouchableOpacity>
+          )
+        })}
          
         </View>
       </View>
