@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, initializeAuth,getReactNativePersistence } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getFirestore, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc  } from 'firebase/firestore';
+
 
 
 // Your web app's Firebase configuration
@@ -70,6 +71,15 @@ const handleSignUp = (email, password) => {
     return tasks;
   };
   
-  export { addTaskToFirestore, getTasksFromFirestore };
+  const deleteTaskFromFirestore = async (taskId) => {
+    try {
+      await deleteDoc(doc(db, "tasks", taskId));
+      console.log("Task deleted!");
+    } catch (error) {
+      console.error("Error deleting task: ", error);
+    }
+  };
 
+
+  export { addTaskToFirestore, getTasksFromFirestore, deleteTaskFromFirestore };
   export { auth, db };

@@ -1,7 +1,7 @@
 import React, { useState , useTransition, useEffect} from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList } from 'react-native';
 import Task from '../components/Task';
-import { auth, addTaskToFirestore, getTasksFromFirestore } from '../firebase'; 
+import { auth, addTaskToFirestore, getTasksFromFirestore , deleteTaskFromFirestore} from '../firebase'; 
 
 
 const Home = () => {
@@ -9,15 +9,6 @@ const Home = () => {
 Keyboard.dismiss();
 const [task,setTask] = useState();
 const [taskItems, setTaskItems] = useState([]);
-
-// const handleAddTask = () => {
-//   if (task && auth.currentUser) {
-//       addTaskToFirestore(auth.currentUser.uid, task).then(() => {
-//       setTaskItems([...taskItems, task]); 
-//       setTask('');
-//     });
-//   }
-// };
 
 const handleAddTask = () => {
   if (task && auth.currentUser) {
@@ -41,10 +32,21 @@ const handleAddTask = () => {
 };
 
 
-const completeTask = (index) => {
-  let itemsCopy = [...taskItems];
-  itemsCopy.splice(index, 1);
-  setTaskItems(itemsCopy);
+// const completeTask = (index) => {
+//   let itemsCopy = [...taskItems];
+//   itemsCopy.splice(index, 1);
+//   setTaskItems(itemsCopy);
+// };
+
+const completeTask = (taskId) => {
+  // Call the Firestore delete function
+  deleteTaskFromFirestore(taskId)
+    .then(() => {
+      setTaskItems(taskItems.filter((item) => item.id !== taskId));
+    })
+    .catch((error) => {
+      console.error("Error deleting task from Firestore: ", error);
+    });
 };
 
 
