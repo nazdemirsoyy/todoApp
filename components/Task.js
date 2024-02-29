@@ -19,7 +19,7 @@ const Task = (props) => {
 
 const styles = StyleSheet.create({
     item:{
-        backgroundColor:'#CCC',
+        backgroundColor:'#ebf1f8',
         padding:15,
         borderRadius:10,
         flexDirection:'row',
