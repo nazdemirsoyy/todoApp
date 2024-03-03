@@ -64,9 +64,15 @@ useEffect(() => {
 
 
 
+// const renderItem = ({ item }) => (
+//   <TouchableOpacity onPress={() => completeTask(item.id)}>
+//     <Task text={item.task} />
+//   </TouchableOpacity>
+// );
+
 const renderItem = ({ item }) => (
-  <TouchableOpacity onPress={() => completeTask(item.id)}>
-    <Task text={item.task} />
+  <TouchableOpacity>
+  <Task text={item.task} onDelete={() => completeTask(item.id)} />
   </TouchableOpacity>
 );
 
@@ -74,30 +80,19 @@ return (
     <View style={styles.container}>
       {/* Today's tasks */}
 
-      {/* <FlatList
-        data={taskItems}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        style={styles.taskList}
-      /> */}
-
       <View style = {styles.taskWrapper}>
         <Text style = {styles.sectionTitle}> Today's Tasks</Text>
         
-        <View style = {styles.items}>
-        {/* <FlatList
-          data={taskItems}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        /> */}
-        {
-          taskItems.map((item) => {
-          return (
-            <TouchableOpacity key={item.id} onPress={() => completeTask(item.id)}>
-              <Task text={item.task} />
-            </TouchableOpacity>
-          )
-        })}
+        <View style={styles.items}>
+          {taskItems.map((item) => {
+            return (
+              <Task
+                key={item.id}
+                text={item.task}
+                onDelete={() => completeTask(item.id)}
+              />
+            );
+          })}
          
         </View>
       </View>
