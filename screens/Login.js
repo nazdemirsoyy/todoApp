@@ -1,22 +1,21 @@
 import React , { useEffect, useState } from "react";
 import { KeyboardAvoidingView, StyleSheet,Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useNavigation } from '@react-navigation/core'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword} from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail} from 'firebase/auth';
 import { auth } from "../firebase";
 
 const Login =() =>{
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const navigation = useNavigation()
+    const navigation = useNavigation();
 
     const handleSignUp = () => {
         createUserWithEmailAndPassword(auth, email, password)
           .then(userCredentials => {
             const user = userCredentials.user;
             console.log('Registered with:', user.email);
-            // Navigate to the Home Screen or other appropriate screen
-            navigation.navigate('Home'); // Make sure 'Home' is the correct route name
+            navigation.navigate('Home'); 
           })
           .catch(error => alert(error.message));
     };
@@ -26,9 +25,13 @@ const Login =() =>{
         .then(userCredentials => {
           const user = userCredentials.user;
           console.log('Logged in with:', user.email);
-          navigation.navigate('Home'); // Make sure 'Home' is the correct route name
+          navigation.navigate('Home'); 
         })
         .catch(error => alert(error.message));
+    };
+
+    const handleForgotPassword = () => {
+      navigation.navigate('ForgotPassword');  
     };
 
     return(
@@ -66,6 +69,10 @@ const Login =() =>{
         <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+
         </View>
 
         </KeyboardAvoidingView>
@@ -80,6 +87,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor:'#06151F',
     },
     inputContainer: {
       width: '80%'
@@ -98,7 +106,7 @@ const styles = StyleSheet.create({
       marginTop: 40,
     },
     button: {
-      backgroundColor: '#0782F9',
+      backgroundColor: '#536878',
       width: '100%',
       padding: 15,
       borderRadius: 10,
@@ -107,7 +115,7 @@ const styles = StyleSheet.create({
     buttonOutline: {
       backgroundColor: 'white',
       marginTop: 5,
-      borderColor: '#0782F9',
+      borderColor: '#536878',
       borderWidth: 2,
     },
     buttonText: {
@@ -116,8 +124,14 @@ const styles = StyleSheet.create({
       fontSize: 16,
     },
     buttonOutlineText: {
-      color: '#0782F9',
+      color: '#536878',
       fontWeight: '700',
       fontSize: 16,
-    },
+    },forgotPasswordText:{
+      marginTop:10,
+      color: '#FFF',
+      // fontWeight: '700',
+      // fontSize: 16,
+      textDecorationLine: 'underline',
+    }
   })

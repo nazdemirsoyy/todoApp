@@ -6,7 +6,7 @@ import { auth, addTaskToFirestore, getTasksFromFirestore , deleteTaskFromFiresto
 
 const Home = () => {
 
-Keyboard.dismiss();
+// Keyboard.dismiss();
 const [task,setTask] = useState();
 const [taskItems, setTaskItems] = useState([]);
 
@@ -104,7 +104,7 @@ return (
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: '#06151F',
     },
     taskWrapper: {
       paddingTop:80,
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     sectionTitle:{
       fontSize:24,
       fontWeight:'bold',
+      color:'white'
   },
     items:{
       marginTop:30,
