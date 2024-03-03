@@ -1,5 +1,5 @@
 import React, { useState , useTransition, useEffect} from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, LayoutAnimation } from 'react-native';
 import Task from '../components/Task';
 import { auth, addTaskToFirestore, getTasksFromFirestore , deleteTaskFromFirestore} from '../firebase'; 
 
@@ -32,16 +32,10 @@ const handleAddTask = () => {
 };
 
 
-// const completeTask = (index) => {
-//   let itemsCopy = [...taskItems];
-//   itemsCopy.splice(index, 1);
-//   setTaskItems(itemsCopy);
-// };
-
 const completeTask = (taskId) => {
-  // Call the Firestore delete function
   deleteTaskFromFirestore(taskId)
     .then(() => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setTaskItems(taskItems.filter((item) => item.id !== taskId));
     })
     .catch((error) => {
@@ -62,13 +56,6 @@ useEffect(() => {
   }
 }, [auth.currentUser]);
 
-
-
-// const renderItem = ({ item }) => (
-//   <TouchableOpacity onPress={() => completeTask(item.id)}>
-//     <Task text={item.task} />
-//   </TouchableOpacity>
-// );
 
 const renderItem = ({ item }) => (
   <TouchableOpacity>
@@ -109,8 +96,6 @@ return (
         </View>
       </TouchableOpacity>
       </KeyboardAvoidingView>
-
-
     </View>
   );
 

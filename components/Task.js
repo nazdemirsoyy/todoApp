@@ -1,8 +1,9 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View, TextInput  } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 const Task = ({ text, onDelete })  => {
+
     return(
         <View style ={styles.item}>
         <View style = {styles.itemLeft}>
